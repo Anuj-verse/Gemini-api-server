@@ -10,7 +10,17 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const apiKeys = process.env.GEMINI_API_KEYS ? process.env.GEMINI_API_KEYS.split(',') : [];
+let currentKeyIndex = 0;
+
+function getNextApiKey() {
+  if (apiKeys.length === 0) {
+    throw new Error("No Gemini API keys found");
+  }
+  const key = apiKeys[currentKeyIndex];
+  currentKeyIndex = (currentKeyIndex + 1) % apiKeys.length;
+  return key;
+}
 
 app.post("/generate", async (req, res) => {
   try {
@@ -24,6 +34,10 @@ app.post("/generate", async (req, res) => {
 
     let responseText;
     
+    // Initialize genAI with the next rotated API key
+    const apiKey = getNextApiKey();
+    const genAI = new GoogleGenerativeAI(apiKey);
+
     try {
       // Primary Attempt: Try Gemini 3.5 Flash
       const primaryModel = genAI.getGenerativeModel({ model: "gemini-3.5-flash" });
