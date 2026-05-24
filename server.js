@@ -22,9 +22,9 @@ function getNextApiKey() {
   return key;
 }
 
-app.post("/generate", async (req, res) => {
+app.all("/generate", async (req, res) => {
   try {
-    const { prompt } = req.body;
+    const prompt = req.query.prompt || (req.body && req.body.prompt);
 
     if (!prompt) {
       // Set header to plain text for errors to keep output formatting consistent
