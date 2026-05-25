@@ -1,0 +1,24 @@
+name: CI/CD Pipeline for Gemini API Server
+
+on:
+  push:
+    branches:
+    - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+    with:
+      node-version: '18'
+
+    - name: Install dependencies 
+      run: npm ci
+
+    - name: lint 
+      run: npm run lint
+    
+    - run: echo "build suceesfully"
